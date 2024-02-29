@@ -30,7 +30,7 @@ namespace SparkfunVariableLoadBatteryTester
     String Security_Key = "000000000000";
 
     // String holding the Cyacd file path/name
-    string Chosen_File_Cyacd = "C:\\dev\\walter\\Sparkfun Variable Load\\Variable_Load\\Firmware\\Variable_Load\\Variable_Load.cydsn\\CortexM3\\ARM_GCC_541\\Debug\\Variable_Load.cyacd";
+    string Chosen_File_Cyacd = "C:\\dev\\walter\\Sparkfun Variable Load\\Sparkfun-Variable-Load-Battery-Tester\\Board\\Firmware\\Variable_Load\\Variable_Load.cydsn\\CortexM3\\ARM_GCC_541\\Release\\Variable_Load.cyacd";
     bool Cyacd_found;
 
     // For checking bootloading progress

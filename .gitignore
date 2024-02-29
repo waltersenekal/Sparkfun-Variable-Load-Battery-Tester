@@ -23,8 +23,7 @@
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
-*.so
+
 *.so.*
 *.dylib
 
@@ -50,3 +49,36 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+*.cywrk.*
+*.cyprj.*
+
+Application/.vs/
+
+Application/SparkfunVariableLoadBatteryTester/bin/
+
+Application/SparkfunVariableLoadBatteryTester/obj/
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/codegentemp/
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/CortexM3/
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/Export/
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/Variable_Load_timing.html
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/Variable_Load.rpt
+
+Board/Firmware/Variable_Load/Variable_Load.cydsn/Variable_Load.cyfit
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/codegentemp/
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/CortexM3/
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/Export/
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/Bootloader_timing.html
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/Bootloader.rpt
+
+Board/Firmware/Variable_Load/Bootloader.cydsn/Bootloader.cyfit
