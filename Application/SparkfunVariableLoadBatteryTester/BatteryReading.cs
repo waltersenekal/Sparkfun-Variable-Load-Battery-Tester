@@ -19,6 +19,7 @@ namespace SparkfunVariableLoadBatteryTester
     public Double V_Min { get; set; }
 
     public Double mA_Hours { get; set; }
+    public bool b_TestisRunning { get; set; }
 
     public BatteryReading() { }
 

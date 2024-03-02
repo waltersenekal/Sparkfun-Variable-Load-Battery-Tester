@@ -12,6 +12,10 @@ using System.Threading;
 using Gurux.Serial;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Diagnostics;
+using Syncfusion.Windows.Forms.Chart;
+using static Syncfusion.WinForms.Core.NativeTouch;
+using System.Collections;
+using System.Drawing.Imaging;
 
 namespace SparkfunVariableLoadBatteryTester
 {  
@@ -22,7 +26,6 @@ namespace SparkfunVariableLoadBatteryTester
     Parity parity = Parity.None;
     StopBits stopBits = StopBits.One;
     Gurux.Serial.GXSerial serialPort = new GXSerial();
-    Handshake serialHandshake = Handshake.None;
     string[] Last_Entry_Name = new string[10];
     Double[] Last_Entry_Value = new Double[10];
     List<DateTime> T_TimestampList = new List<DateTime>();
@@ -31,19 +34,17 @@ namespace SparkfunVariableLoadBatteryTester
     List<Double> V_SourceList = new List<Double>();
     List<Double> V_MinList = new List<Double>();
     List<Double> mA_HoursList = new List<Double>();
+    List<bool> b_TestisRunningList = new List<bool>();
     DateTime T_Timestamp_last = DateTime.Now;
     Double I_Source_last = 0;
     Double I_Limit_last = 0;
     Double V_Source_last = 0;
     Double V_Min_last = 0;
     Double mA_Hours_last = 0;
-    DateTime T_Timestamp_prev = DateTime.Now;
     Double I_Source_prev = 0;
-    Double I_Limit_prev = 0;
-    Double V_Source_prev = 0;
-    Double V_Min_prev = 0;
-    Double mA_Hours_prev = 0;
     Double Counter = 0;
+    bool b_TestisRunning_last = false;
+
     string filePath;
     string CSV_Seperator = ",";
 
@@ -58,7 +59,7 @@ namespace SparkfunVariableLoadBatteryTester
 
 
       PopulateAvailableSerialPorts();
-      generateChart();
+      //generateChart();
       filePath = Application.StartupPath + "\\report"  + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv";
       String Message = "T_Timestamp" + CSV_Seperator + "I_Source" + CSV_Seperator + "I_Limit" + CSV_Seperator + "V_Source" + CSV_Seperator + "V_Min" + CSV_Seperator + "mA_Hours" + "\r\n";
       WriteToFile(Message);
@@ -99,59 +100,48 @@ namespace SparkfunVariableLoadBatteryTester
       
     }
 
+    /*
     private void generateChart()
     {
       Random random = new Random();
-      //var objChart = chart.ChartAreas[0];
-      //objChart.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
-      //objChart.AxisX.Minimum = 0;
-      //objChart.AxisX.Maximum = 12;
-      //objChart.AxisY.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
-      
+
       Series I_Source_Series = new Series();
       Series I_Limit_Series= new Series();
       Series V_Source_Series = new Series();
       Series V_Min_Series = new Series();
       Series mA_Hours_Series = new Series();
+      Series mA_Hours_Series = new Series();
       I_Source_Series.Name = "I_Source";
-      //I_Source_Series.Legend = "I_Source";
-      //I_Source_Series.ChartArea = "I_Source";
       I_Source_Series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
       I_Source_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
       I_Limit_Series.Name = "I_Limit";
-      //I_Limit_Series.Legend = "I_Limit";
-      //I_Limit_Series.ChartArea = "I_Limit";
       I_Limit_Series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
       I_Limit_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
       V_Source_Series.Name = "V_Source";
-      //V_Source_Series.Legend = "V_Source";
-      //V_Source_Series.ChartArea = "V_Source";
       V_Source_Series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
       V_Source_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
       V_Min_Series.Name = "V_Min";
-      //V_Min_Series.Legend = "V_Min";
-      //V_Min_Series.ChartArea = "V_Min";
       V_Min_Series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
       V_Min_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
       mA_Hours_Series.Name = "mA_Hours";
-      //mA_Hours_Series.Legend = "mA_Hours";
-      //mA_Hours_Series.ChartArea = "mA_Hours";
       mA_Hours_Series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-      mA_Hours_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+     mA_Hours_Series.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
-
-
-      chart.Series.Clear();
-      chart.Series.Add(I_Source_Series);
-      chart.Series.Add(I_Limit_Series);
-      chart.Series.Add(V_Source_Series);
-      chart.Series.Add(V_Min_Series);
-      chart.Series.Add(mA_Hours_Series);
-    }
+      //int seriesess = chartVoltage.Series.Count;
+      // voltageSeries = chartVoltage.Series[0];
+      //voltageSeries.Points.Clear();
+      //voltageSeries.Points.Add
+            // chart.Series.Clear();
+            // chart.Series.Add(I_Source_Series);
+            // chart.Series.Add(I_Limit_Series);
+            //  chart.Series.Add(V_Source_Series);
+            //  chart.Series.Add(V_Min_Series);
+            //  chart.Series.Add(mA_Hours_Series);
+        }*/
 
     private void btnConnect_Click(object sender, EventArgs e)
     {
@@ -167,18 +157,27 @@ namespace SparkfunVariableLoadBatteryTester
       V_SourceList.Clear();
       V_MinList.Clear();
       mA_HoursList.Clear();
+      dataGridView.Rows.Clear();
+      dataGridView.Refresh();
+      chartVoltage.Series[0].Points.Clear();
+      chartVoltage.Refresh();
+      if (numBatMaxVoltage.Value > 0)
+      {
+        chartVoltage.PrimaryYAxis.Range = new MinMaxInfo((double)numVoltageMin.Value -0.2, (double)numBatMaxVoltage.Value + 0.2, 0.2);
+      }
       lblStartTime.Text = "N/A";
       lblEndTime.Text = "N/A";
       serialPort.Send("I" + numCurrentConst.Value + "\n");
-      Thread.Sleep(1000);
+      Thread.Sleep(500);
       serialPort.Send("V" + numVoltageMin.Value + "\n");
-      Thread.Sleep(1000);
+      Thread.Sleep(500);
       serialPort.Send("E0\n");
-      Thread.Sleep(1000);
+      Thread.Sleep(500);
       serialPort.Send("R\n");
-      Thread.Sleep(1000);
+      Thread.Sleep(500);
+
       serialPort.Send("E1\n");
-      Thread.Sleep(1000);
+;
     }
 
     private void btnEndTest_Click(object sender, EventArgs e)
@@ -199,25 +198,36 @@ namespace SparkfunVariableLoadBatteryTester
 
     private void OpenComPort()
     {
+      try { 
+      
       if (serialPort.IsOpen)
       {
         serialPort.Close();
       }
       serialPort.PortName = cboPorts.Text;
       serialPort.Open();
+      } catch (Exception ex) {
+        MessageBox.Show(ex.Message);
+      }
     }
 
     private void GxSerial_OnReceived(object sender, Gurux.Common.ReceiveEventArgs e)
     {
       byte[] myData = (byte[])e.Data;
       string resp = DecodeVt100(myData);
-      ClearSerialData();
-      WriteSerialData(resp + "\r\n");
-      ProcessData();
+
+        ClearSerialData();
+        WriteSerialData(resp + "\r\n");
+      if (b_TestisRunning_last)
+      {
+
+        ProcessData();
+      }
     }
 
     string DecodeVt100(byte[] data)
     {
+      string resultString = Encoding.UTF8.GetString(data);
       List<byte[]> dataList = new List<byte[]>();
       byte[] pattern1 = new byte[] { 0x1B, 0x5B, 0x32, 0x4a };
       byte[] pattern2 = new byte[] { 0x1B, 0x5B };
@@ -235,8 +245,9 @@ namespace SparkfunVariableLoadBatteryTester
       data = RemoveBytes(data, pattern5);
       data = RemoveBytes(data, pattern7);
       dataList = SplitByteArray(data, pattern3[0]);
+      int i = 0;
       foreach (byte[] b in dataList)
-      {
+      {        
         //Only use lines that contains ';'
         if (FindBytes(b, pattern6) > 0)
         {
@@ -246,6 +257,10 @@ namespace SparkfunVariableLoadBatteryTester
             string each_number = System.Text.Encoding.UTF8.GetString(entry[0]);
             int each_number_i = Int32.Parse(each_number);
             string each_data = System.Text.Encoding.UTF8.GetString(entry[1]);
+            if (each_number_i == 6) {
+              int j = 0;
+              j++;
+            }
             if (each_data.Contains(':'))
             {
               //This is the Entry Name
@@ -255,31 +270,47 @@ namespace SparkfunVariableLoadBatteryTester
             }
             else
             {
+              if (each_number_i == 5)
+              {
+                int j = 0;
+                j++;
+              }
+              if (each_number_i == 6)
+              {
+                int j = 0;
+                j++;
+              }
               //This is the Entry Value
               each_data = each_data.Trim();
               Last_Entry_Value[each_number_i] = Convert.ToDouble(each_data, System.Globalization.CultureInfo.InvariantCulture);
             }
           }
         }
+        i++;
       }
+/*
       T_Timestamp_prev = T_Timestamp_last;
       I_Source_prev = I_Source_last;
       I_Limit_prev = I_Limit_last;
       V_Source_prev = V_Source_last;
       V_Min_prev = V_Min_last;
       mA_Hours_prev = mA_Hours_last;
+*/
       T_Timestamp_last = DateTime.Now;
       I_Source_last = Math.Round(Last_Entry_Value[1],2);
       I_Limit_last = Math.Round(Last_Entry_Value[2],2);
       V_Source_last = Math.Round(Last_Entry_Value[3],2);
       V_Min_last = Math.Round(Last_Entry_Value[4],2);
       mA_Hours_last = Math.Round(Last_Entry_Value[5],2);
+      b_TestisRunning_last = Last_Entry_Value[6]==1;
+
       T_TimestampList.Add(DateTime.Now);
       I_SourceList.Add(I_Source_last);
       I_LimitList.Add(I_Limit_last);
       V_SourceList.Add(V_Source_last);
       V_MinList.Add(V_Min_last);
       mA_HoursList.Add(mA_Hours_last);
+      b_TestisRunningList.Add(b_TestisRunning_last);
       return LastValuesToString();
     }
     private byte[] RemoveBytes(byte[] input, byte[] pattern)
@@ -421,6 +452,7 @@ namespace SparkfunVariableLoadBatteryTester
       else
       {
         txtOutput.Text += data;
+        txtOutput.Refresh();
       }
     }
     private void WriteConsole(char c)
@@ -472,6 +504,7 @@ namespace SparkfunVariableLoadBatteryTester
         V_SourceList.Clear();
         V_MinList.Clear();
         mA_HoursList.Clear();
+        b_TestisRunningList.Clear();
         writeStartLabel(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
         writeEndLabel("N/A");
       }
@@ -487,6 +520,7 @@ namespace SparkfunVariableLoadBatteryTester
       ReadingEntry.V_Source = V_Source_last;
       ReadingEntry.V_Min = V_Min_last;
       ReadingEntry.mA_Hours = mA_Hours_last;
+      ReadingEntry.b_TestisRunning = b_TestisRunning_last;
       AddDataEntry(ReadingEntry);
     }
     private void AddDataEntry(BatteryReading ReadingEntry)
@@ -512,16 +546,23 @@ namespace SparkfunVariableLoadBatteryTester
     {
       double XAxis = ReadingEntry.TimeStamp.Ticks;
       XAxis = Counter++;
-      chart.Series["I_Source"].Points.AddXY(XAxis, ReadingEntry.I_Source);
-      
-      chart.Series["I_Limit"].Points.AddXY(XAxis, ReadingEntry.I_Limit);
+      if (chartVoltage.Series.Count > 0)
+      {
+        //batteryReadingBindingSourcebatteryReadingBindingSource
+        ChartSeries voltageSeries = chartVoltage.Series[0];
+        voltageSeries.Points.Add(ReadingEntry.mA_Hours, ReadingEntry.V_Source);
+        chartVoltage.Refresh();
+      }
+      //    chart.Series["I_Source"].Points.AddXY(XAxis, ReadingEntry.I_Source);
 
-      chart.Series["V_Source"].Points.AddXY(XAxis, ReadingEntry.V_Source);
+      //     chart.Series["I_Limit"].Points.AddXY(XAxis, ReadingEntry.I_Limit);
 
-      chart.Series["V_Min"].Points.AddXY(XAxis, ReadingEntry.V_Min);
+      //     chart.Series["V_Source"].Points.AddXY(XAxis, ReadingEntry.V_Source);
+
+      //     chart.Series["V_Min"].Points.AddXY(XAxis, ReadingEntry.V_Min);
 
       //chart.Series["mA_Hours"].Points.AddXY(ReadingEntry.TimeStamp, ReadingEntry.mA_Hours);
-      chart.Refresh();
+      //     chart.Refresh();
     }
 
     private void frmMain_Load(object sender, EventArgs e)
@@ -532,6 +573,22 @@ namespace SparkfunVariableLoadBatteryTester
     private void cboPorts_Click(object sender, EventArgs e)
     {
       PopulateAvailableSerialPorts();
+    }
+
+    private void btnTestClear_Click(object sender, EventArgs e)
+    {
+      chartVoltage.Series[0].Points.Clear();
+      //chartVoltage.PrimaryXAxis.Range = new MinMaxInfo(0, 200, 1);
+      chartVoltage.PrimaryYAxis.Range = new MinMaxInfo(0, 5.2, 1);
+      //ChartSeries voltageSeries = chartVoltage.Series[0];
+      //voltageSeries.Points.Clear();
+    }
+
+    private void btnTestAdd_Click(object sender, EventArgs e)
+    {
+      ChartSeries voltageSeries = chartVoltage.Series[0];
+      voltageSeries.Points.Add(0.8, 0.8);
+      chartVoltage.Refresh();
     }
   }
 }

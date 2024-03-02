@@ -285,7 +285,9 @@ bool show_ver = false;
 			putString("V Min:");
 			goToPos(1, 5);
 			putString("mA Hours:");
-			goToPos(12, 1);
+			goToPos(1, 6);
+			putString("Running:");
+			goToPos(12, 1);			
 			if (iSource < 0) iSource *= -1;
 			sprintf(buff, "%6.3f", iSource / 1000.0f);
 			putString(buff);
@@ -301,13 +303,10 @@ bool show_ver = false;
 			goToPos(12, 5);
 			sprintf(buff, "%6.3f", maHours / 3600.0f);
 			putString(buff);
-            if(enableOutput){
-                goToPos(1, 6);
-                putString("Running: YES");
-            }else{
-                goToPos(1, 6);
-                putString("Running: NO");
-            }
+			goToPos(12, 6);
+			sprintf(buff, " %d", enableOutput==true?1:0);
+			putString(buff);
+               
             if(show_ver){
                 goToPos(1, 7);
                 putString("Version:");
